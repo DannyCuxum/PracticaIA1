@@ -33,22 +33,7 @@ public class VisionController {
             String url = "https://vision.googleapis.com/v1/images:annotate?key=" + visionKey;
 
             // Crear el cuerpo de la solicitud
-            /*
-            String jsonBody = "{"
-                    + "\"requests\":["
-                    + "{"
-                    + "\"image\":{"
-                    + "\"content\":\"" + base64Image + "\""
-                    + "},"
-                    + "\"features\":["
-                    + "{"
-                    + "\"type\":\"LABEL_DETECTION\""
-                    + "}"
-                    + "]"
-                    + "}"
-                    + "]"
-                    + "}";
-            */
+
             String jsonBody = "{"
                     + "\"requests\":["
                     + "{"
