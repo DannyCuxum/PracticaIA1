@@ -7,7 +7,7 @@ import Swal from 'sweetalert2'
 
 
 
-const TableComponent = ({Data, Percentage}) => {
+const TableComponent = ({Info, Porcen}) => {
   return (
     <TableContainer sx={{marginTop:5}} component={Paper}>
       <Table sx={{}}>
@@ -19,11 +19,11 @@ const TableComponent = ({Data, Percentage}) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.keys(Data).map((category, index) => (
+          {Object.keys(Info).map((category, index) => (
             <TableRow key={index}>
               <TableCell>{category}</TableCell>
-              <TableCell>{Data[category]}</TableCell>
-              <TableCell>{Percentage[category]}</TableCell>
+              <TableCell>{Info[category]}</TableCell>
+              <TableCell>{Porcen[category]}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -37,18 +37,17 @@ const TableComponent = ({Data, Percentage}) => {
 
 
 function Principal() {
-
+  const [porcen,setPorcen] = useState({
+    adult: 0,
+    medical: 0,
+    racy: 0,
+    spoof: 0,
+    violence: 0
+    });
 
     //Variables de estado.
-    const [showAlert,setShowAlert]=useState(false)  // si no es apta para la institucion
-    const [showAlertV,setShowAlertV]=useState(false)  // si es valida
-    const [percentage,setPercentage] = useState({// me sirve para categorizar el valor de la etiqueta
-        adult: 0,
-        medical: 0,
-        racy: 0,
-        spoof: 0,
-        violence: 0
-        });
+    const [showAlert,setShowAlert]=useState(false) 
+    const [showAlertV,setShowAlertV]=useState(false)  
     const [infoImage, setInfoImage] = useState({
         adult: "",
         medical: "",
@@ -58,11 +57,11 @@ function Principal() {
     });
     
     const valueTicket = {// posibles valores segun la etica de google
-        VERY_UNLIKELY: 15,//15
-        UNLIKELY: 45,//45
-        POSSIBLE: 65,//65
-        LIKELY: 85,//85
-        VERY_LIKELY: 100//100
+        VERY_UNLIKELY: 0,//15
+        UNLIKELY: 20,//45
+        POSSIBLE: 35,//65
+        LIKELY: 60,//85
+        VERY_LIKELY: 80//100
     };
 
     const [nCaras, setNCaras] = useState("...")
@@ -71,7 +70,7 @@ function Principal() {
     // con el useRef se puede jalar el valor de un input creado en otra clase y colocarlo adentro de otra variable desada
 
     const handleCargarClick = () => {
-        setPercentage({
+        setPorcen({
           adult: 0,
           medical: 0,
           racy: 0,
@@ -136,17 +135,17 @@ function Principal() {
                 }
                 setInfoImage(datos["safeSearchAnnotation"])// aqui se guardan los datos de la imagen y las propiedades para difuminar
                 
-                const percentageAux = {};
+                const porcenAux = {};
 
                 console.log("Proceso de analisis de imagen")
                 Object.keys(datos["safeSearchAnnotation"]).forEach(key => {
                   const stringValue = datos["safeSearchAnnotation"][key];
                   console.log(stringValue)
-                  percentageAux[key] = valueTicket[stringValue];
+                  porcenAux[key] = valueTicket[stringValue];
                 });
                 console.log("El procentaje")
-                console.log(percentageAux)
-                setPercentage(percentageAux)
+                console.log(porcenAux)
+                setPorcen(porcenAux)
 
 
                 //***************************************************************** */
@@ -160,33 +159,29 @@ function Principal() {
       };
     
       useEffect(() => {
-        // Check if 'violence' percentage is greater than or equal to 60
+
+        const totalPercentage = parseInt(porcen.violence) + parseInt(porcen.racy) + parseInt(porcen.adult);
+        
         setShowAlertV(false)
         setShowAlert(false)
-        if (parseInt(percentage.violence) >= 45 && parseInt(percentage.racy) >= 45 && parseInt(percentage.adult) > 15) {
-          // If true, apply blur to the image
+        if (parseInt(porcen.violence) + parseInt(porcen.racy) + parseInt(porcen.adult) > 45) {
           document.getElementById('ImagenAnalizada').style.filter = 'blur(5px)';
           setShowAlert(true)
-        }else if (parseInt(percentage.violence) >= 65) {
-          // If true, apply blur to the image
+        }else if (parseInt(porcen.violence) >= 60) {
           document.getElementById('ImagenAnalizada').style.filter = 'blur(5px)';
-        } else if (parseInt(percentage.racy) > 45) {
-          // If true, apply blur to the image
+        } else if (parseInt(porcen.racy) >=50) {
           document.getElementById('ImagenAnalizada').style.filter = 'blur(5px)';
-        } else if (parseInt(percentage.adult) >= 45) {
-          // If true, apply blur to the image
+        } else if (parseInt(porcen.adult) >= 40) {
           document.getElementById('ImagenAnalizada').style.filter = 'blur(5px)';
-        } else  if (parseInt(percentage.violence) >0){ // si no es ninguna de las condiciones pero tan siquiera tiene valores (por que si 
-                                                      //  se escogio la opcion cargar todo sera 0 pues no se evaluara nada solo se pondra
-                                                      // la imagen)
+        }  else if (Object.values(porcen).every(value => value === 0)) {
           document.getElementById('ImagenAnalizada').style.filter = 'none';
-          setShowAlertV(true) // si la imagen es valida, si no en cualquier cambio desaparecera esta opcion
+          
         }
         else {
-          // Otherwise, remove blur
           document.getElementById('ImagenAnalizada').style.filter = 'none';
+          setShowAlertV(true)
         }
-      }, [percentage]);
+      }, [porcen]);
 
 
   return (
@@ -194,7 +189,7 @@ function Principal() {
         <Grid container sx={{ display: "flex", fontFamily: "Arial" }}>
             <Grid container justifyContent={"left"}>
                 
-                <Typography variant="h3" component="h2"  align="">
+                <Typography variant="h3" component="h2"  align="right">
                     Practica 1
                 </Typography>
                 
@@ -210,13 +205,13 @@ function Principal() {
                 </Grid>
                 <Grid item xs={2}>
                 {/* Modificar button a un button estándar de HTML */}
-                <button type="button" class="btn btn-primary" onClick={handleCargarClick} style={{ marginTop: 2 }}>
+                <button type="button" className="btn btn-primary" onClick={handleCargarClick} style={{ marginTop: 2 }}>
                             Importar
                         </button>
                 </Grid>
                 <Grid item xs={2}>
                   {/* Modificar button a un button estándar de HTML */}
-                  <button type="button" class="btn btn-success" onClick={handleProcesarClick} style={{ marginTop: 2 }}>
+                  <button type="button" className="btn btn-success" onClick={handleProcesarClick} style={{ marginTop: 2 }}>
                             Analizar
                         </button>
                   </Grid>
@@ -245,7 +240,7 @@ function Principal() {
                             />
                 </Grid>
                 
-                <TableComponent Data={infoImage} Percentage={percentage}/>
+                <TableComponent Info={infoImage} Porcen={porcen}/>
                 </Grid>
                 <Grid item xs={1} />
             </Grid>
