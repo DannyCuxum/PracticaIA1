@@ -224,26 +224,31 @@ function Principal() {
                 {showAlert && <Alert variant="filled" severity="error" sx={{ marginTop: 2 }}>Imagen no apta para la institución</Alert>}
                 {showAlertV && <Alert variant="filled" severity="success" sx={{ marginTop: 2 }}>Imagen Valida</Alert>}
                 </Grid>
-                <Grid item xs={2} />
-                <Grid item xs={4}>
-                {/*APARTADO PARA INFO IMAGEN
-                    Este textarea no se puede modificar manualmente a menos que se agrege un onChange={handleInputChange}
-                    donde handleInputChange seria una funcion cualquiera que cambia los valores de la variable a través
-                    del uso de setVariable declarado en el useEffect, el handleInputChange deberia de ser handleInputChange(event){event.target.value}
-                */}
-                <Grid container>
-                <input
-                                type="text"
-                                style={{ width: "80%", marginTop: 5, marginLeft: 5 }}
-                                value={String(nCaras)}
-                                readOnly // Para hacer el input de solo lectura
-                            />
-                </Grid>
                 
-                <TableComponent Info={infoImage} Porcen={porcen}/>
+                <Grid item xs={2} >
+                  <Grid container>
+                    <Typography variant="h6" component="h2"  align="left">
+                        Cantidad de Caras
+                    </Typography>
+                    <input
+                                    type="text"
+                                    style={{ width: "80%", marginTop: 5, marginLeft: 5 }}
+                                    value={String(nCaras)}
+                                    readOnly // Para hacer el input de solo lectura
+                                />
+                  </Grid>
+                 </Grid> 
+                <Grid item xs={4}>
                 </Grid>
-                <Grid item xs={1} />
-            </Grid>
+                <Grid item xs={3} >
+                  <Grid container>
+                    <Typography variant="h6" component="h2"  align="left">
+                            Datos de la Imagen
+                        </Typography>
+                    <TableComponent Info={infoImage} Porcen={porcen}/>
+                  </Grid>
+                </Grid>
+              </Grid>
     </Grid>
     </div>
   );
